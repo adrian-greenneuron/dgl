@@ -56,6 +56,19 @@ For acquainted users who wish to learn more,
 All the learning materials are available at our [documentation site](https://docs.dgl.ai/). If you are new to deep learning in general,
 check out the open source book [Dive into Deep Learning](https://d2l.ai/).
 
+### NVIDIA DGX Spark Support
+
+DGL supports NVIDIA DGX Spark with Grace Blackwell (GB10) GPU. To build and run:
+
+```bash
+cd docker
+./build_dgx_spark.sh build   # Build Docker image
+./build_dgx_spark.sh run     # Verify installation
+./build_dgx_spark.sh shell   # Interactive shell
+```
+
+See [docs/DGX_SPARK.md](docs/DGX_SPARK.md) for detailed instructions.
+
 
 ## Community
 
