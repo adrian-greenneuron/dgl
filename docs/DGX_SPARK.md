@@ -2,6 +2,22 @@
 
 Build and run DGL on NVIDIA DGX Spark with Grace Blackwell (GB10) GPU.
 
+## Verified Build ✅
+
+Build tested on December 19, 2025:
+
+| Component | Status |
+|-----------|--------|
+| DGL Core | ✅ Working |
+| DGL Sparse | ✅ Working (BUILD_SPARSE=ON) |
+| DGL GraphBolt | ✅ Working (BUILD_GRAPHBOLT=ON) |
+| Build Time | ~6 minutes |
+
+### Tested Functionality
+- Graph creation and GPU transfer
+- Sparse matrix operations (SpMV, transpose)
+- GraphBolt ItemSet and FusedCSCSamplingGraph
+
 ## Quick Start
 
 ```bash
