@@ -26,3 +26,23 @@ docker build -t dgl-cpu:torch-1.2.0 -f Dockerfile.ci_cpu_torch_1.2.0 .
 wget https://data.dgl.ai/dataset/FB15k.zip -P install/
 docker build -t dgl-gpu:torch-1.2.0 -f Dockerfile.ci_gpu_torch_1.2.0 .
 ```
+
+### DGX Spark (Grace Blackwell GB10)
+
+Build and run DGL on NVIDIA DGX Spark with Blackwell GPU:
+
+```bash
+# Build image (uses nvcr.io/nvidia/pytorch:25.01-py3 base)
+./build_dgx_spark.sh build
+
+# Verify installation
+./build_dgx_spark.sh run
+
+# Run tests
+./build_dgx_spark.sh test
+
+# Interactive shell
+./build_dgx_spark.sh shell
+```
+
+See [Dockerfile.dgx_spark](Dockerfile.dgx_spark) and [docs/DGX_SPARK.md](../docs/DGX_SPARK.md) for details.
