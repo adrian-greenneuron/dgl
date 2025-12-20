@@ -58,13 +58,18 @@ check out the open source book [Dive into Deep Learning](https://d2l.ai/).
 
 ### NVIDIA DGX Spark Support
 
-DGL supports NVIDIA DGX Spark with Grace Blackwell (GB10) GPU. To build and run:
+DGL supports NVIDIA DGX Spark with Grace Blackwell (GB10) GPU:
+
+| Version | CUDA | PyTorch | Architectures |
+|---------|------|---------|---------------|
+| cuda12 | 12.8 | 2.6 | sm_120 |
+| cuda13 | 13.0 | 2.10 | sm_120, sm_121 |
 
 ```bash
 cd docker
-./build_dgx_spark.sh build   # Build Docker image
-./build_dgx_spark.sh run     # Verify installation
-./build_dgx_spark.sh shell   # Interactive shell
+./build_dgx_spark.sh cuda13 build   # Build (CUDA 13 default)
+./build_dgx_spark.sh cuda13 run     # Verify
+./build_dgx_spark.sh cuda12 build   # Build CUDA 12 variant
 ```
 
 See [docs/DGX_SPARK.md](docs/DGX_SPARK.md) for detailed instructions.

@@ -4,26 +4,19 @@ Build and run DGL on NVIDIA DGX Spark with Grace Blackwell (GB10) GPU.
 
 ## Verified Build ✅
 
-Build tested on December 19, 2025:
-
-| Component | Status |
-|-----------|--------|
-| DGL Core | ✅ Working |
-| DGL Sparse | ✅ Working (BUILD_SPARSE=ON) |
-| DGL GraphBolt | ✅ Working (BUILD_GRAPHBOLT=ON) |
-| Build Time | ~6 minutes |
-
-### Tested Functionality
-- Graph creation and GPU transfer
-- Sparse matrix operations (SpMV, transpose)
-- GraphBolt ItemSet and FusedCSCSamplingGraph
+| Component | CUDA 12.8 | CUDA 13.0 |
+|-----------|-----------|-----------|
+| DGL Core | ✅ | ✅ |
+| DGL Sparse | ✅ | ✅ |
+| DGL GraphBolt | ✅ | ✅ |
+| GNN Layers | ✅ | ✅ |
 
 ## Quick Start
 
 ```bash
 cd docker
 
-# Build the Docker image
+# Build (CUDA 13 is default)
 ./build_dgx_spark.sh build
 
 # Verify installation
@@ -36,20 +29,28 @@ cd docker
 ./build_dgx_spark.sh shell
 ```
 
+## CUDA Versions
+
+| Version | Base Image | PyTorch | CUDA | Architectures |
+|---------|------------|---------|------|---------------|
+| cuda12 | `nvcr.io/nvidia/pytorch:25.01-py3` | 2.6 | 12.8 | sm_120 |
+| cuda13 | `nvcr.io/nvidia/pytorch:25.11-py3` | 2.10 | 13.0 | sm_120, sm_121 |
+
+```bash
+# CUDA 13 (default)
+./build_dgx_spark.sh cuda13 build
+./build_dgx_spark.sh cuda13 run
+
+# CUDA 12
+./build_dgx_spark.sh cuda12 build
+./build_dgx_spark.sh cuda12 run
+```
+
 ## Requirements
 
 - NVIDIA DGX Spark with GB10 GPU
 - Docker with NVIDIA Container Toolkit
 - Network access to NGC (`nvcr.io`)
-
-## Architecture
-
-| Component | Version |
-|-----------|---------|
-| Base Image | `nvcr.io/nvidia/pytorch:25.01-py3` |
-| CUDA | 12.8 |
-| PyTorch | 2.6 |
-| GPU Arch | sm_120 (Blackwell) |
 
 ## Build Options
 
@@ -58,9 +59,6 @@ Environment variables for customization:
 ```bash
 # Parallel build jobs (default: 8)
 MAX_JOBS=16 ./build_dgx_spark.sh build
-
-# Custom CUDA architecture
-CUDA_ARCH=121 ./build_dgx_spark.sh build
 ```
 
 ## Manual Build
@@ -70,12 +68,15 @@ If you prefer to build without Docker:
 ```bash
 # Set environment
 export CUDA_ARCH_NAME=Blackwell
-export TORCH_CUDA_ARCH_LIST="12.0"
+export TORCH_CUDA_ARCH_LIST="12.0;12.1"
+export CUDAARCHS="120;121"
 
 # Build
 mkdir build && cd build
 cmake -DUSE_CUDA=ON \
       -DCUDA_ARCH_NAME=Blackwell \
+      -DBUILD_SPARSE=ON \
+      -DBUILD_GRAPHBOLT=ON \
       -DBUILD_TYPE=release \
       ..
 make -j$(nproc)
@@ -102,5 +103,5 @@ nvidia-ctk --version
 
 Check CUDA version compatibility:
 ```bash
-nvcc --version  # Should be 12.8+
+nvcc --version
 ```

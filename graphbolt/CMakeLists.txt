@@ -64,11 +64,12 @@ if(USE_CUDA)
   endif()
   set(CMAKE_CUDA_ARCHITECTURES_FILTERED ${CMAKE_CUDA_ARCHITECTURES})
   # CUDA extension supports only sm_70 and up (Volta+).
-  list(FILTER CMAKE_CUDA_ARCHITECTURES_FILTERED EXCLUDE REGEX "[2-6][0-9]")
+  # Regex matches 2-digit architectures 20-69 only (not 3-digit like 120/121).
+  list(FILTER CMAKE_CUDA_ARCHITECTURES_FILTERED EXCLUDE REGEX "^[2-6][0-9]$")
   list(LENGTH CMAKE_CUDA_ARCHITECTURES_FILTERED CMAKE_CUDA_ARCHITECTURES_FILTERED_LEN)
   if(CMAKE_CUDA_ARCHITECTURES_FILTERED_LEN EQUAL 0)
-    # Build the CUDA extension at least build for Volta.
-    set(CMAKE_CUDA_ARCHITECTURES_FILTERED "70")
+    # Build the CUDA extension for Blackwell (sm_120) as default for CUDA 13+.
+    set(CMAKE_CUDA_ARCHITECTURES_FILTERED "120")
   endif()
   set(LIB_GRAPHBOLT_CUDA_NAME "${LIB_GRAPHBOLT_NAME}_cuda")
 endif()

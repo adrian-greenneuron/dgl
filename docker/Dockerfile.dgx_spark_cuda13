@@ -1,0 +1,57 @@
+# DGL Build for NVIDIA DGX Spark (Grace Blackwell GB10) - CUDA 13
+# Base: NGC PyTorch 25.11-py3 (Contains CUDA 13.0, PyTorch 2.10)
+# This base image provides native Blackwell nvrtc sm_120/sm_121 support.
+FROM nvcr.io/nvidia/pytorch:25.11-py3
+
+LABEL maintainer="DGL Team"
+LABEL description="DGL with CUDA 13 and Blackwell GPU support for NVIDIA DGX Spark"
+
+# Build arguments
+ARG CUDA_ARCH="120;121"
+ARG MAX_JOBS=8
+
+# Environment variables
+ENV DGL_HOME=/workspace/dgl
+ENV CUDA_ARCH_NAME=Blackwell
+ENV TORCH_CUDA_ARCH_LIST="12.0;12.1"
+ENV CUDAARCHS="120;121"
+ENV MAX_JOBS=${MAX_JOBS}
+
+# Install DGL build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ninja-build \
+    libopenblas-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy DGL source
+COPY . ${DGL_HOME}
+WORKDIR ${DGL_HOME}
+
+# Initialize git submodules
+RUN git submodule update --init --recursive || true
+
+# Build DGL with Blackwell support
+RUN mkdir -p build && cd build && \
+    cmake -DUSE_CUDA=ON \
+    -DCUDA_ARCH_NAME=Manual \
+    -DCUDA_ARCH_BIN="${CUDA_ARCH}" \
+    -DCUDA_ARCH_PTX="${CUDA_ARCH}" \
+    -DBUILD_TYPE=release \
+    -DBUILD_TORCH=ON \
+    -DBUILD_SPARSE=ON \
+    -DBUILD_GRAPHBOLT=ON \
+    -DCMAKE_BUILD_TYPE=Release \
+    -GNinja \
+    .. && \
+    ninja -j${MAX_JOBS}
+
+# Install DGL Python package
+WORKDIR ${DGL_HOME}/python
+RUN pip install -e . --no-deps
+
+# Set working directory (use /app to avoid dgl source folder shadowing the package)
+WORKDIR /app
+
+# Verification command
+CMD ["python3", "-c", "import dgl; import torch; print(f'PyTorch {torch.__version__}'); print(f'CUDA {torch.version.cuda}'); g = dgl.graph(([0,1],[1,2])).to('cuda'); print(f'Graph on: {g.device}'); print('SUCCESS!')"]
+

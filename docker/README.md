@@ -29,24 +29,34 @@ docker build -t dgl-gpu:torch-1.2.0 -f Dockerfile.ci_gpu_torch_1.2.0 .
 
 ### DGX Spark (Grace Blackwell GB10) ✅
 
-Build and run DGL on NVIDIA DGX Spark with Blackwell GPU. **Verified working** with:
-- DGL Core, DGL Sparse, and DGL GraphBolt
-- CUDA 12.8, PyTorch 2.6, sm_120 architecture
-- Build time: ~6 minutes
+Build and run DGL on NVIDIA DGX Spark with Blackwell GPU.
 
+#### Quick Start
 ```bash
-# Build image (uses nvcr.io/nvidia/pytorch:25.01-py3 base)
+# Build and run (defaults to CUDA 13)
 ./build_dgx_spark.sh build
-
-# Verify installation
 ./build_dgx_spark.sh run
-
-# Run tests
 ./build_dgx_spark.sh test
-
-# Interactive shell
-./build_dgx_spark.sh shell
 ```
 
-See [Dockerfile.dgx_spark](Dockerfile.dgx_spark) and [docs/DGX_SPARK.md](../docs/DGX_SPARK.md) for details.
+#### CUDA Versions
 
+| Version | Base Image | PyTorch | CUDA | Architectures |
+|---------|------------|---------|------|---------------|
+| cuda12 | `nvcr.io/nvidia/pytorch:25.01-py3` | 2.6 | 12.8 | sm_120 |
+| cuda13 | `nvcr.io/nvidia/pytorch:25.11-py3` | 2.10 | 13.0 | sm_120, sm_121 |
+
+```bash
+# CUDA 13 (default)
+./build_dgx_spark.sh cuda13 build
+./build_dgx_spark.sh cuda13 run
+
+# CUDA 12
+./build_dgx_spark.sh cuda12 build
+./build_dgx_spark.sh cuda12 run
+
+# Interactive shell
+./build_dgx_spark.sh cuda13 shell
+```
+
+See [docs/DGX_SPARK.md](../docs/DGX_SPARK.md) for more details.
